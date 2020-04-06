@@ -12,4 +12,6 @@ EG:    This project aims to integrate various functional sample codes for easy r
 >     Completed           已完成
 >
 >     mail-examples       Mail发送示例代码
+>
+>     websocket-demo      websocket页面demo
 
