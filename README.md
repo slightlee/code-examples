@@ -14,4 +14,6 @@ EG:    This project aims to integrate various functional sample codes for easy r
 >     mail-examples       Mail发送示例代码
 >
 >     websocket-demo      websocket页面demo
+>
+>     upload-demo         （单/多）文件上传demo
 
