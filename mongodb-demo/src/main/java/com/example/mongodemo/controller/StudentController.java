@@ -1,18 +1,26 @@
 package com.example.mongodemo.controller;
 
 import com.example.mongodemo.entity.Student;
+import com.example.mongodemo.repository.StudentRepository;
 import com.example.mongodemo.service.StudentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Api(value = "", tags = "【student测试】")
 @RestController
@@ -27,6 +35,9 @@ public class StudentController {
      */
     @Autowired
     private MongoOperations mongo;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
 
 
@@ -125,6 +136,12 @@ public class StudentController {
         return studentService.queryByNameLike(name);
     }
 
+    @ApiOperation( value = "【student测试】-大于", notes = "", position = 1 )
+    @GetMapping(value = "findByAgeGreaterThan")
+    public List<Student> findByAgeGreaterThan(Integer age){
+        return studentService.findByAgeGreaterThan(age);
+    }
+
     /**
      * 模糊查询加分页 ？
      */
@@ -138,6 +155,35 @@ public class StudentController {
             rows = 5;
         }
         return studentService.queryByNameLikeAndPage(page,rows,name);
+    }
+
+
+    @ApiOperation( value = "【student测试】-使用Criteria封装查询条件", notes = "", position = 1 )
+    @GetMapping(value = "getListWithCriteria")
+    public Page<Student> getListWithCriteria(Integer page, Integer rows,String name,Integer age) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page, rows, sort);
+
+        Query query = new Query();
+
+        //动态拼接查询条件
+        if (!StringUtils.isEmpty(name)){
+            Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
+            query.addCriteria(Criteria.where("name").regex(pattern));
+        }
+
+        if (age != null){
+            query.addCriteria(Criteria.where("age").is(age));
+        }
+
+
+        //计算总数
+        long total = mongoTemplate.count(query, Student.class);
+
+        //查询结果集
+        List<Student> studentList = mongoTemplate.find(query.with(pageable), Student.class);
+        Page<Student> studentPage = new PageImpl(studentList, pageable, total);
+        return studentPage;
     }
 
 }

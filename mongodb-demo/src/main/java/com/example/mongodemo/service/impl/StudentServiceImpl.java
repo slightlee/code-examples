@@ -88,6 +88,12 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findByNameLike(name);
     }
 
+    @Override
+    public List<Student> findByAgeGreaterThan(Integer age) {
+        return studentRepository.findByAgeGreaterThan(age);
+    }
+
+
     /**
      * 根据实体属性进行模糊查询并分页
      * @return

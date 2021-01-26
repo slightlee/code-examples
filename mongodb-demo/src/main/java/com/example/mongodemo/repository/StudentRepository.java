@@ -26,6 +26,26 @@ public interface StudentRepository  extends MongoRepository<Student,String> {
     List<Student> findByNameLike(String name);
 
     /**
+     * 大于
+     */
+    List<Student> findByAgeGreaterThan(Integer age);
+
+    /**
+     * 小于
+     */
+    List<Student> findByAgeLessThan(Integer age);
+
+    /**
+     * 在...之间
+     */
+    List<Student> findByAgeBetween(Integer from, Integer to);
+
+    /**
+     *  IsNotNull, NotNull（是否非空）
+     *
+     */
+
+    /**
      * 根据实体属性进行模糊查询+分页：find + By + 属性名（首字母大写） + Like
      */
     Page<Student> findByNameLike(String name, PageRequest pageRequest);

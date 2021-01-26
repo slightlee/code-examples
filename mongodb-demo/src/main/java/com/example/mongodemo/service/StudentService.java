@@ -48,6 +48,8 @@ public interface StudentService {
      */
     List<Student> queryByNameLike(String name);
 
+    List<Student> findByAgeGreaterThan(Integer age);
+
     /**
      * 根据实体属性进行【模糊+分页】查询
      */
